@@ -1,43 +1,65 @@
 {
   "expo": {
-    "name": "onspace-app",
-    "slug": "onspace-app",
+    "name": "LoveSpace",
+    "slug": "lovespace",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/logo.png",
-    "scheme": "onspaceapp",
+    "icon": "./assets/images/icon.png",
+    "scheme": "lovespace",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FFF0F5"
+    },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.lovespace.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "LoveSpace precisa acessar sua câmera para capturar momentos especiais com seu parceiro(a).",
+        "NSPhotoLibraryUsageDescription": "LoveSpace precisa acessar suas fotos para compartilhar memórias do relacionamento.",
+        "NSLocationWhenInUseUsageDescription": "LoveSpace usa sua localização para mostrar a distância entre você e seu parceiro(a)."
+      }
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/logo.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#FFF0F5"
       },
-      "edgeToEdgeEnabled": true
+      "package": "com.lovespace.app",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION"
+      ]
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/logo.png"
+      "favicon": "./assets/images/icon.png"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/logo.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#FFF0F5",
+          "imageWidth": 200
         }
-      ],
-      "expo-web-browser"
+      ]
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "your-project-id"
+      }
     }
   }
 }
