@@ -5,7 +5,7 @@ const supabase = getSupabaseClient();
 
 export const coupleService = {
   // Generate and create a new couple invitation
-  async createInvitation(): Promise<{ data: Couple | null; error: string | null }> {
+  async createInvitation(): Promise<{ data: Couple | null; error: string | null; inviteCode?: string }> {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return { data: null, error: 'Usuário não autenticado' };
@@ -19,7 +19,11 @@ export const coupleService = {
         .single();
 
       if (existing) {
-        return { data: existing as Couple, error: null };
+        return { 
+          data: existing as Couple, 
+          error: null,
+          inviteCode: existing.invite_code
+        };
       }
 
       // Generate invite code
@@ -33,7 +37,7 @@ export const coupleService = {
         .from('couples')
         .insert({
           user1_id: user.id,
-          user2_id: user.id, // Temporary, will be updated when partner joins
+          user2_id: user.id,
           invite_code: codeData,
           status: 'pending'
         })
@@ -41,7 +45,11 @@ export const coupleService = {
         .single();
 
       if (error) throw error;
-      return { data: data as Couple, error: null };
+      return { 
+        data: data as Couple, 
+        error: null,
+        inviteCode: codeData
+      };
     } catch (err) {
       return { data: null, error: (err as Error).message };
     }
@@ -53,16 +61,34 @@ export const coupleService = {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return { data: null, error: 'Usuário não autenticado' };
 
+      // Normalize invite code
+      const normalizedCode = inviteCode.trim().toUpperCase().replace(/\s/g, '');
+      const formattedCode = normalizedCode.includes('-') 
+        ? normalizedCode 
+        : normalizedCode.slice(0, 4) + '-' + normalizedCode.slice(4);
+
       // Find the couple invitation
       const { data: couple, error: fetchError } = await supabase
         .from('couples')
         .select('*')
-        .eq('invite_code', inviteCode.toUpperCase())
+        .eq('invite_code', formattedCode)
         .eq('status', 'pending')
         .single();
 
       if (fetchError || !couple) {
-        return { data: null, error: 'Código de convite inválido ou expirado' };
+        return { data: null, error: 'Código de convite inválido ou expirado. Verifique o código e tente novamente.' };
+      }
+
+      // Check if user already has an active couple
+      const { data: existingCouple } = await supabase
+        .from('couples')
+        .select('*')
+        .or(`user1_id.eq.${user.id},user2_id.eq.${user.id}`)
+        .eq('status', 'active')
+        .single();
+
+      if (existingCouple) {
+        return { data: null, error: 'Você já está em um relacionamento ativo' };
       }
 
       if (couple.user1_id === user.id) {

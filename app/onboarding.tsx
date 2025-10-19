@@ -38,13 +38,40 @@ export default function OnboardingScreen() {
     }
   };
 
+  const formatInviteCode = (text: string) => {
+    // Remove tudo que não for letra ou número
+    const cleaned = text.replace(/[^A-Z0-9]/gi, '').toUpperCase();
+    
+    // Limita a 8 caracteres
+    const limited = cleaned.slice(0, 8);
+    
+    // Adiciona hífen após 4 caracteres
+    if (limited.length > 4) {
+      return limited.slice(0, 4) + '-' + limited.slice(4);
+    }
+    
+    return limited;
+  };
+
+  const handleInviteCodeChange = (text: string) => {
+    const formatted = formatInviteCode(text);
+    setInviteCode(formatted);
+  };
+
   const handleJoinCouple = async () => {
-    if (!inviteCode.trim()) {
+    const cleanCode = inviteCode.trim();
+    
+    if (!cleanCode) {
       showAlert('Erro', 'Por favor, insira o código de convite');
       return;
     }
 
-    const result = await joinCouple(inviteCode.trim().toUpperCase());
+    if (cleanCode.replace('-', '').length !== 8) {
+      showAlert('Erro', 'O código deve ter 8 caracteres (formato: XXXX-XXXX)');
+      return;
+    }
+
+    const result = await joinCouple(cleanCode);
     if (result.error) {
       showAlert('Erro', result.error);
     } else {
@@ -171,15 +198,19 @@ export default function OnboardingScreen() {
                 <MaterialIcons name="vpn-key" size={24} color="#FF69B4" style={styles.inputIcon} />
                 <TextInput
                   style={styles.input}
-                  placeholder="CÓDIGO-CONVITE"
+                  placeholder="XXXX-XXXX"
                   placeholderTextColor="#FFB6C1"
                   value={inviteCode}
-                  onChangeText={setInviteCode}
+                  onChangeText={handleInviteCodeChange}
                   autoCapitalize="characters"
-                  maxLength={8}
+                  maxLength={9}
                   editable={!operationLoading}
                 />
               </View>
+
+              <Text style={styles.hintText}>
+                Digite o código de 8 caracteres no formato XXXX-XXXX
+              </Text>
 
               <TouchableOpacity
                 style={[styles.button, operationLoading && styles.buttonDisabled]}
@@ -278,7 +309,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF0F5',
     borderRadius: 16,
     paddingHorizontal: 16,
-    marginBottom: 24,
+    marginBottom: 8,
     borderWidth: 2,
     borderColor: '#FFB6C1',
     width: '100%',
@@ -293,6 +324,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#333',
     textAlign: 'center',
+    letterSpacing: 2,
+  },
+  hintText: {
+    fontSize: 12,
+    color: '#999',
+    textAlign: 'center',
+    marginBottom: 24,
   },
   button: {
     backgroundColor: '#FF69B4',
@@ -338,7 +376,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   codeText: {
-    fontSize: 32,
+    fontSize: 36,
     fontWeight: 'bold',
     color: '#FF69B4',
     letterSpacing: 4,
