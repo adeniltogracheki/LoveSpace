@@ -10,11 +10,14 @@
       "resizeMode": "contain",
       "backgroundColor": "#FFF0F5"
     },
-    "ios": {
+        "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.lovespace.app"
+    },
     "android": {
       "package": "com.lovespace.app"
+    },
+    "web": {
       "output": "static"
     },
     "plugins": [
