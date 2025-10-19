@@ -4,41 +4,18 @@
     "slug": "lovespace",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
     "scheme": "lovespace",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/images/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#FFF0F5"
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.lovespace.app",
-      "infoPlist": {
-        "NSCameraUsageDescription": "LoveSpace precisa acessar sua câmera para capturar momentos especiais com seu parceiro(a).",
-        "NSPhotoLibraryUsageDescription": "LoveSpace precisa acessar suas fotos para compartilhar memórias do relacionamento.",
-        "NSLocationWhenInUseUsageDescription": "LoveSpace usa sua localização para mostrar a distância entre você e seu parceiro(a)."
-      }
-    },
+      "bundleIdentifier": "com.lovespace.app"
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#FFF0F5"
-      },
-      "package": "com.lovespace.app",
-      "permissions": [
-        "android.permission.CAMERA",
-        "android.permission.READ_EXTERNAL_STORAGE",
-        "android.permission.WRITE_EXTERNAL_STORAGE",
-        "android.permission.ACCESS_FINE_LOCATION",
-        "android.permission.ACCESS_COARSE_LOCATION"
-      ]
-    },
-    "web": {
-      "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/images/icon.png"
+      "package": "com.lovespace.app"
+      "output": "static"
     },
     "plugins": [
       "expo-router",
