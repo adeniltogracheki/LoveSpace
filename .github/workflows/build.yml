@@ -9,37 +9,41 @@ jobs:
   build:
     runs-on: ubuntu-latest
     
-    # 💡 Dica: Defina o working-directory padrão para a subpasta
-    defaults:
-      run:
-        working-directory: lovespace
+    # REMOVIDO: A seção 'defaults: run: working-directory: lovespace'
+    # Agora tudo será executado na raiz do repositório.
 
     steps:
       - uses: actions/checkout@v4
 
+      # 1. Setup Java 17
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
 
+      # 2. Setup Flutter
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
           cache: true
       
-      # Este passo agora encontrará o pubspec.yaml dentro de lovespace/
+      # 3. Instalar dependências (Executa na raiz)
       - name: Install Dependencies
         run: flutter pub get
 
-      # Este passo agora encontrará o projeto dentro de lovespace/
+      # 4. Build APK (Executa na raiz)
       - name: Build APK
-        run: flutter build apk --release
+        # Boas práticas: flutter clean antes do build
+        run: |
+          flutter clean
+          flutter build apk --release
 
+      # 5. Upload APK (Caminho corrigido para a raiz)
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: lovespace-apk
-          # Ajuste o path para usar a estrutura da subpasta lovespace
-          path: lovespace/build/app/outputs/flutter-apk/app-release.apk
+          # Caminho definitivo para o APK quando o build é na raiz
+          path: build/app/outputs/flutter-apk/app-release.apk
