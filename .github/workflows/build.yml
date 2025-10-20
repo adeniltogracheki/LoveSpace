@@ -33,7 +33,8 @@ jobs:
 
     # 4. Compila o APK em modo release
     - name: Build APK
-      run: flutter build apk --release
+      run: cd lovespace
+           flutter build apk --release
 
     # 5. Salva o APK gerado como um "artefato" para download
     - name: Upload APK
