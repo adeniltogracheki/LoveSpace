@@ -3,7 +3,7 @@ name: Build LoveSpace APK
 # Dispara o workflow quando há um push para a branch 'main'
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
   # Permite que você rode o build manualmente pela interface do GitHub
   workflow_dispatch:
 
