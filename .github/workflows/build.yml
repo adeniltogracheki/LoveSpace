@@ -1,49 +1,52 @@
-name: Build LoveSpace APK
+# .github/workflows/build_apk.yml (Para Expo/React Native com pnpm)
+
+name: Build Expo/React Native APK (pnpm)
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ] # Usa a branch 'main', que contém o código
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    
-    # REMOVIDO: A seção 'defaults: run: working-directory: lovespace'
-    # Agora tudo será executado na raiz do repositório.
-
     steps:
       - uses: actions/checkout@v4
 
-      # 1. Setup Java 17
-      - name: Setup Java
-        uses: actions/setup-java@v4
+      # 1. Configura o Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          distribution: 'zulu'
-          java-version: '17'
-
-      # 2. Setup Flutter
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
+          node-version: 20 # Versão recomendada para projetos JS modernos
+          
+      # 2. Configura o pnpm
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
         with:
-          channel: 'stable'
-          cache: true
-      
-      # 3. Instalar dependências (Executa na raiz)
-      - name: Install Dependencies
-        run: flutter pub get
+          version: 9 # Use a versão mais recente
+          run_install: true # Roda 'pnpm install' automaticamente
 
-      # 4. Build APK (Executa na raiz)
-      - name: Build APK
-        # Boas práticas: flutter clean antes do build
-        run: |
-          flutter clean
-          flutter build apk --release
+      # 3. Instala as dependências globais do Expo CLI
+      - name: Install Expo CLI
+        run: pnpm install -g expo-cli
 
-      # 5. Upload APK (Caminho corrigido para a raiz)
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+      # 4. Authentica com o Expo (Necessário para o build)
+      # ⚠️ Requer que você configure o EXPO_TOKEN nos seus Secrets do GitHub
+      - name: Authenticate with Expo
+        run: npx expo login --token ${{ secrets.EXPO_TOKEN }}
+
+      # 5. Builda o APK (ou App Bundle - AAB, que é o padrão para Play Store)
+      - name: Build Android App Bundle (AAB)
+        # Use o comando 'eas build' que é a ferramenta recomendada do Expo
+        run: npx eas build --platform android --profile production --non-interactive
+        # O profile 'production' assume o build para a loja. Se for teste, use 'preview'
+
+      # 6. Faz o download do Artefato de Build
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
         with:
-          name: lovespace-apk
-          # Caminho definitivo para o APK quando o build é na raiz
-          path: build/app/outputs/flutter-apk/app-release.apk
+          name: ${{ steps.build-android.outputs.build-path }} # Caminho padrão do EAS
+
+      # 7. Opcional: Publica o Artefato (AAB)
+      # Este passo pode ser ajustado para fazer o upload para o GitHub Releases ou Play Store
+      # (Pular o Upload-Artifact do APK, já que o download já fez o trabalho)
