@@ -10,27 +10,37 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Setup Java
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'zulu'
-        java-version: '17'
+      # 1. Setup Java (Necessário para o Flutter Android)
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
 
-    - name: Setup Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        channel: 'stable'
-        cache: true
+      # 2. Setup Flutter
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+      
+      # 3. Instalar dependências (Prática recomendada)
+      - name: Install Dependencies
+        run: flutter pub get
 
-    - name: Build APK
-      run: |
-        cd lovespace
-        flutter build apk --release
+      # 4. Build APK (Removido o 'cd lovespace')
+      - name: Build APK
+        run: flutter build apk --release
 
-    - name: Upload APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: lovespace-apk
-        path: lovespace/build/app/outputs/flutter-apk/app-release.apk
+      # 5. Upload APK (Caminho corrigido)
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: lovespace-apk
+          # O caminho correto para o APK gerado na raiz do projeto é este:
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+      # **OPCIONAL:** Se você precisar do APK para uma release, use a pasta 
+      # build/app/outputs/flutter-apk/, pois ela pode ter outros arquivos de build.
